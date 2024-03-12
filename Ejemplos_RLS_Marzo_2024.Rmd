@@ -1,0 +1,262 @@
+---
+title: "Regresión Lineal."
+author: "Análisis Numérico"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 1
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(pracma)
+library(plotly)
+library(MASS)
+library(ISLR2)
+library(car)
+library(corrplot)
+library(rgl)
+knitr::knit_hooks$set(webgl = hook_webgl)
+```
+
+Cargar el conjunto de datos
+
+```{r}
+data(Credit)
+head(Credit)
+glimpse(Credit)
+```
+
+
+# Distribución de variables numéricas{.tabset}
+
+## Income
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Income, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+## Limit
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Limit, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+## Rating
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Rating, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+## Cards
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Cards, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+
+## Age
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Age, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+
+## Education
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Education, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+
+
+
+## Balance
+
+```{r, message=FALSE}
+ggplot(Credit)+
+  geom_histogram(aes(Rating, fill=Student), color="black")+
+  scale_fill_manual(values=c("firebrick", "goldenrod"))+
+  theme_bw()
+
+```
+
+
+
+# Diagramas de dispersión
+
+
+```{r}
+var_num <- dplyr::select(Credit, where(is.numeric)) |> names()
+
+comb_par <- t(combn(var_num, 2))
+
+
+for (k in 1:21) {
+grafica <-   ggplot(Credit)+
+    geom_point(aes(eval(as.name(comb_par[k,1])), eval(as.name(comb_par[k,2])), color=Student), size=2)+
+    geom_smooth(aes(eval(as.name(comb_par[k,1])), eval(as.name(comb_par[k,2]))), linewidth=1.5, method = "lm")+
+  scale_color_manual(values=c("firebrick", "goldenrod"))+
+    labs(x=comb_par[k,1], y=comb_par[k,2])+
+                 theme_bw()
+  print(grafica)
+}
+
+```
+
+
+# Matriz de scatterplots
+
+```{r fig.width=15, fig.height=15}
+scatterplotMatrix(~ Income + Limit + Rating + Cards + Age + Education +Balance,  regLine=TRUE, smooth=FALSE,  diagonal=list(method="histogram"), data=Credit)
+```
+
+
+
+
+
+
+# Regregresión lineal simple $Balance \approx \beta_0+\beta_1\, Income$ {.tabset}
+
+
+## Scatterplot
+
+```{r}
+ggplot(Credit)+
+    geom_point(aes(Income, Balance, color=Student), size=2)+
+    geom_smooth(aes(Income, Balance), linewidth=1.5, method = "lm", se=FALSE)+
+  scale_color_manual(values=c("firebrick", "goldenrod"))+
+    labs(x="Income", y="Balance")+
+                 theme_bw()
+```
+
+## Resultados
+
+```{r}
+BI_lm <- lm(Balance~Income, data=Credit)
+summary(BI_lm)
+```
+
+
+
+
+
+# Distribución t
+
+
+```{r}
+funcion_dist <- function(x){dt(x, 398)}
+
+
+ggplot()+
+  geom_function(fun=funcion_dist, xlim=c(-5, 5))+
+  stat_function(fun=funcion_dist, geom="area", xlim=c(-5, -2), fill="deeppink", alpha=0.3)+
+  stat_function(fun=funcion_dist, geom="area", xlim=c(2, 5), fill="deeppink", alpha=0.3)+
+  theme_bw()
+
+
+```
+```{r}
+pt(-2, 398, lower.tail = TRUE)*2
+```
+
+
+
+# Matriz de correralción
+
+```{r}
+mat_cor <- cor(Credit |> dplyr::select(where(is.numeric)))
+corrplot(mat_cor, method="color")
+```
+
+
+# Modelo de regresión lineal $Income \approx \beta_0 +\beta_1 Age$ {.tabset}
+
+## Diagrama de dispersión
+
+```{r}
+grafica <-   ggplot(Credit)+
+    geom_point(aes(Age, Income, color=Student), size=2)+
+    geom_smooth(aes(Age, Income), linewidth=1.5, method = "lm", se=FALSE)+
+  scale_color_manual(values=c("firebrick", "goldenrod"))+
+    labs(x="Age", y="Income")+
+                 theme_bw()
+
+ggplotly(grafica)
+```
+
+## Resultados
+
+```{r}
+IA_lm <- lm(Income ~ Age, data=Credit)
+summary(IA_lm)
+```
+
+# Regresión lineal múltiple $Limit \approx \beta_0 +\beta_1 Income + \beta_2 Age$ {.tabset}
+
+
+## Scatterplot
+
+```{r webgl=TRUE}
+scatter3d(Limit~ Income + Balance, data= Credit, fit="linear", residuals=TRUE, bg="white", axis.scales=TRUE, 
+  grid=TRUE, ellipsoid=FALSE)
+
+
+```
+
+
+## Resultados
+
+```{r}
+LIA_lm <- lm(Limit~Income+ Balance, data=Credit)
+summary(LIA_lm)
+```
+
+
+
+
+
+
+
+
+
+
