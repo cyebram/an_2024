@@ -46,3 +46,117 @@ glimpse(datos)
 ```
 
 
+# Regresión lineal exportaciones totales ~ actividad industrial
+
+```{r}
+ggplot(datos)+
+  geom_point(aes(actividad_industrial, exportaciones_totales), color="#EEE234", size=1.5)+
+  geom_smooth(aes(actividad_industrial, exportaciones_totales), color="red4", linewidth=1.2, method = "lm")+
+  theme_bw()
+```
+
+```{r}
+rl_ei <- lm(exportaciones_totales~ actividad_industrial, data=datos)
+summary(rl_ei)
+```
+
+```{r}
+data_comp <- datos |> dplyr::select(Periodo, actividad_industrial, exportaciones_totales)
+data_comp <- na.omit(data_comp)
+
+rc_ei <- lm(exportaciones_totales~ actividad_industrial+ I(actividad_industrial^2), data=data_comp)
+
+summary(rc_ei)
+
+data_comp <- mutate(data_comp, exportaciones_totales_ajuste=rc_ei$fitted.values)
+
+```
+
+
+```{r}
+ggplot(data_comp)+
+  geom_point(aes(actividad_industrial, exportaciones_totales), color="#EEE234", size=1.5)+
+  geom_line(aes(actividad_industrial, exportaciones_totales_ajuste), color="red4", linewidth=1.2)+
+  theme_bw()
+```
+
+```{r}
+ggplot(datos)+
+  geom_line(aes(Periodo, exportaciones_totales), color="red")+
+  geom_line(aes(Periodo, actividad_industrial*550), color="blue")+
+  theme_bw()
+```
+
+
+
+```{r}
+data_comp <- datos |> dplyr::select(Periodo, actividad_industrial, actividades_terciarias, exportaciones_totales)
+data_comp <- na.omit(data_comp)
+
+rc_eit <- lm(exportaciones_totales~ actividad_industrial+ actividades_terciarias, data=data_comp)
+
+summary(rc_eit)
+
+data_comp <- mutate(data_comp, exportaciones_totales_ajuste=rc_eit$fitted.values)
+
+```
+
+```{r}
+ggplot(datos)+
+  geom_point(aes(actividades_terciarias, exportaciones_totales), color="#EEE234", size=1.5)+
+  geom_smooth(aes(actividades_terciarias, exportaciones_totales), color="red4", linewidth=1.2, method = "lm")+
+  theme_bw()
+```
+
+
+```{r webgl=TRUE}
+scatter3d(exportaciones_totales~ actividad_industrial + actividades_terciarias, data= datos, fit="linear", residuals=TRUE, bg="white", axis.scales=TRUE, 
+  grid=TRUE, ellipsoid=FALSE)
+
+
+```
+
+
+```{r}
+datos_2022 <- datos |> filter(year(Periodo)%in% c(2022, 2023))
+datos_2022$mes <- 1:24
+
+
+sp_pppc <- function(x){ppval(cubicspline(datos_2022$mes, datos_2022$precio_promedio_petroleo_crudo),x)}
+
+ggplot(datos_2022)+
+  geom_line(aes(mes, precio_promedio_petroleo_crudo), color="#ABC125")+
+  geom_point(aes(mes, precio_promedio_petroleo_crudo), color="#CCC125", size=1.3)+
+  geom_function(fun=sp_pppc, xlim=c(1,24), linewidth=1.2, color="tomato")+
+  theme_light()
+
+
+```
+
+
+# Regresión lineal tipo cambio real ~ inversión fija bruta
+
+```{r}
+ggplot(datos)+
+  geom_point(aes(tasa_desocupacion_urbana, Asegurados_permanentes_IMSS), color="#EEE234", size=1.5)+
+  geom_smooth(aes(tasa_desocupacion_urbana, Asegurados_permanentes_IMSS), color="red4", linewidth=1.2, method = "lm")+
+  theme_bw()
+```
+
+
+```{r}
+rl_ei <- lm(Asegurados_permanentes_IMSS~ tasa_desocupacion_urbana, data=datos)
+summary(rl_ei)
+```
+
+
+
+
+
+
+
+
+
+
+
+
