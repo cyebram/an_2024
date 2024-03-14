@@ -1,0 +1,48 @@
+---
+title: "Regresión Lineal. Indicadores."
+author: "Análisis Numérico"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 1
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(lubridate)
+library(pracma)
+library(plotly)
+library(MASS)
+library(ISLR2)
+library(car)
+library(corrplot)
+library(rgl)
+library(readxl)
+knitr::knit_hooks$set(webgl = hook_webgl)
+```
+
+
+
+```{r}
+datos <- read_xlsx("Indicadores.xlsx")
+datos$Periodo <- ym(datos$Periodo)
+#datos <- datos[ , 1:7]
+glimpse(datos)
+```
+
+
