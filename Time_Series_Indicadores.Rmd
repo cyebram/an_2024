@@ -1,0 +1,394 @@
+---
+title: "Series de Tiempo. Indicadores."
+author: "Análisis Numérico"
+date: "Marzo 2024"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 1
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(lubridate)
+library(pracma)
+library(plotly)
+library(MASS)
+library(ISLR2)
+library(car)
+library(corrplot)
+library(rgl)
+library(readxl)
+
+library(xts)
+library(TSstudio)
+knitr::knit_hooks$set(webgl = hook_webgl)
+```
+
+
+
+```{r}
+datos <- read_xlsx("Indicadores.xlsx")
+datos$Periodo <- ym(datos$Periodo)
+#datos <- datos[ , 1:7]
+glimpse(datos)
+```
+
+
+# Cetes 28 días {.tabset}
+
+## Distribución 
+
+```{r echo=FALSE}
+data_Cetes_28_dias <- datos |> dplyr::select(Periodo, Cetes_28_dias)
+data_Cetes_28_dias <- na.omit(data_Cetes_28_dias)
+
+ggplot(data_Cetes_28_dias)+
+  geom_histogram(aes(data_Cetes_28_dias$Cetes_28_dias, fill=factor(year(Periodo))), color="black")+
+  labs(fill="Año")+
+  theme_bw()
+```
+
+
+
+
+## Serie temporal
+
+```{r echo=FALSE}
+Cetes_28_dias_ts <- ts(data_Cetes_28_dias$Cetes_28_dias, start = c(1993, 1), frequency = 12)
+Cetes_28_dias_xts <- as.xts(Cetes_28_dias_ts)
+
+ts_info(Cetes_28_dias_xts)
+ts_plot(Cetes_28_dias_xts, slider = TRUE)
+```
+
+## Descomposición
+
+```{r echo=FALSE}
+Cetes_28_dias_dec <- decompose(Cetes_28_dias_ts, type="additive" )
+plot(Cetes_28_dias_dec)
+```
+
+
+## ACF
+
+```{r echo=FALSE}
+Cetes_28_dias_acf <- acf(Cetes_28_dias_ts)
+```
+
+
+## Autorregresión {.tabset}
+
+### Coeficientes
+
+```{r echo=FALSE}
+Cetes_28_dias_ar <- ar(Cetes_28_dias_ts, method = "mle", order.max = 1)
+Cetes_28_dias_ar
+```
+
+### Gráfica
+
+```{r echo=FALSE}
+ts.plot(Cetes_28_dias_ts, Cetes_28_dias_ts-Cetes_28_dias_ar$resid, lty=1:2, col=c("blue", "red"))
+```
+
+
+### Residuos
+
+```{r echo=FALSE}
+ts_plot(Cetes_28_dias_ar$resid)
+```
+
+
+# Actividades terciarias {.tabset}
+
+
+
+
+## Distribución 
+
+```{r echo=FALSE}
+data_actividades_terciarias <- datos |> dplyr::select(Periodo, actividades_terciarias)
+data_actividades_terciarias <- na.omit(data_actividades_terciarias)
+
+ggplot(data_actividades_terciarias)+
+  geom_histogram(aes(data_actividades_terciarias$actividades_terciarias, fill=factor(year(Periodo))), color="black")+
+  labs(fill="Año")+
+  theme_bw()
+```
+
+
+
+
+## Serie temporal
+
+```{r echo=FALSE}
+actividades_terciarias_ts <- ts(data_actividades_terciarias$actividades_terciarias, start = c(1993, 1), frequency = 12)
+actividades_terciarias_xts <- as.xts(actividades_terciarias_ts)
+
+ts_info(actividades_terciarias_xts)
+ts_plot(actividades_terciarias_xts, slider = TRUE)
+```
+
+## Descomposición
+
+```{r echo=FALSE}
+actividades_terciarias_dec <- decompose(actividades_terciarias_ts, type="additive" )
+plot(actividades_terciarias_dec)
+```
+
+
+## ACF
+
+```{r echo=FALSE}
+actividades_terciarias_acf <- acf(actividades_terciarias_ts)
+```
+
+
+## Autorregresión {.tabset}
+
+### Coeficientes
+
+```{r echo=FALSE}
+actividades_terciarias_ar <- ar(actividades_terciarias_ts, method = "mle", order.max = 1)
+actividades_terciarias_ar
+```
+
+### Gráfica
+
+```{r echo=FALSE}
+ts.plot(actividades_terciarias_ts, actividades_terciarias_ts-actividades_terciarias_ar$resid, lty=1:2, col=c("blue", "red"))
+```
+
+
+### Residuos
+
+```{r echo=FALSE}
+ts_plot(actividades_terciarias_ar$resid)
+```
+
+
+# Tipo de cambio real {.tabset}
+
+
+## Distribución 
+
+```{r echo=FALSE}
+data_tipo_cambio_real <- datos |> dplyr::select(Periodo, tipo_cambio_real)
+data_tipo_cambio_real <- na.omit(data_tipo_cambio_real)
+
+ggplot(data_tipo_cambio_real)+
+  geom_histogram(aes(data_tipo_cambio_real$tipo_cambio_real, fill=factor(year(Periodo))), color="black")+
+  labs(fill="Año")+
+  theme_bw()
+```
+
+
+
+
+## Serie temporal
+
+```{r echo=FALSE}
+tipo_cambio_real_ts <- ts(data_tipo_cambio_real$tipo_cambio_real, start = c(1993, 1), frequency = 12)
+tipo_cambio_real_xts <- as.xts(tipo_cambio_real_ts)
+
+ts_info(tipo_cambio_real_xts)
+ts_plot(tipo_cambio_real_xts, slider = TRUE)
+```
+
+## Descomposición
+
+```{r echo=FALSE}
+tipo_cambio_real_dec <- decompose(tipo_cambio_real_ts, type="additive" )
+plot(tipo_cambio_real_dec)
+```
+
+
+## ACF
+
+```{r echo=FALSE}
+tipo_cambio_real_acf <- acf(tipo_cambio_real_ts)
+```
+
+
+## Autorregresión {.tabset}
+
+### Coeficientes
+
+```{r echo=FALSE}
+tipo_cambio_real_ar <- ar(tipo_cambio_real_ts, method = "mle", order.max = 1)
+tipo_cambio_real_ar
+```
+
+### Gráfica
+
+```{r echo=FALSE}
+ts.plot(tipo_cambio_real_ts, tipo_cambio_real_ts-tipo_cambio_real_ar$resid, lty=1:2, col=c("blue", "red"))
+```
+
+
+### Residuos
+
+```{r echo=FALSE}
+ts_plot(tipo_cambio_real_ar$resid)
+```
+
+
+
+
+
+# Tasa desocupación urbana {.tabset}
+
+
+## Distribución 
+
+```{r echo=FALSE}
+data_tasa_desocupacion_urbana <- datos |> dplyr::select(Periodo, tasa_desocupacion_urbana)
+data_tasa_desocupacion_urbana <- na.omit(data_tasa_desocupacion_urbana)
+
+ggplot(data_tasa_desocupacion_urbana)+
+  geom_histogram(aes(data_tasa_desocupacion_urbana$tasa_desocupacion_urbana, fill=factor(year(Periodo))), color="black")+
+  labs(fill="Año")+
+  theme_bw()
+```
+
+
+
+
+## Serie temporal
+
+```{r echo=FALSE}
+tasa_desocupacion_urbana_ts <- ts(data_tasa_desocupacion_urbana$tasa_desocupacion_urbana, start = c(2005, 1), frequency = 12)
+tasa_desocupacion_urbana_xts <- as.xts(tasa_desocupacion_urbana_ts)
+
+ts_info(tasa_desocupacion_urbana_xts)
+ts_plot(tasa_desocupacion_urbana_xts, slider = TRUE)
+```
+
+## Descomposición
+
+```{r echo=FALSE}
+tasa_desocupacion_urbana_dec <- decompose(tasa_desocupacion_urbana_ts, type="additive" )
+plot(tasa_desocupacion_urbana_dec)
+```
+
+
+## ACF
+
+```{r echo=FALSE}
+tasa_desocupacion_urbana_acf <- acf(tasa_desocupacion_urbana_ts)
+```
+
+
+## Autorregresión {.tabset}
+
+### Coeficientes
+
+```{r echo=FALSE}
+tasa_desocupacion_urbana_ar <- ar(tasa_desocupacion_urbana_ts, method = "mle", order.max = 1)
+tasa_desocupacion_urbana_ar
+```
+
+### Gráfica
+
+```{r echo=FALSE}
+ts.plot(tasa_desocupacion_urbana_ts, tasa_desocupacion_urbana_ts-tasa_desocupacion_urbana_ar$resid, lty=1:2, col=c("blue", "red"))
+```
+
+
+### Residuos
+
+```{r echo=FALSE}
+ts_plot(tasa_desocupacion_urbana_ar$resid)
+```
+
+
+
+
+# Ruido blanco {.tabset}
+
+## Distribución 
+
+```{r echo=FALSE}
+data_white_noise <- datos |> dplyr::select(Periodo)
+data_white_noise$white_noise <- rnorm(374, mean=0, sd=1)
+
+ggplot(data_white_noise)+
+  geom_histogram(aes(data_white_noise$white_noise, fill=factor(year(Periodo))), color="black")+
+  labs(fill="Año")+
+  theme_bw()
+```
+
+
+
+
+## Serie temporal
+
+```{r echo=FALSE}
+white_noise_ts <- ts(data_white_noise$white_noise, start = c(1993, 1), frequency = 12)
+white_noise_xts <- as.xts(white_noise_ts)
+
+ts_info(white_noise_xts)
+ts_plot(white_noise_xts, slider = TRUE)
+```
+
+## Descomposición
+
+```{r echo=FALSE}
+white_noise_dec <- decompose(white_noise_ts, type="additive" )
+plot(white_noise_dec)
+```
+
+
+## ACF
+
+```{r echo=FALSE}
+white_noise_acf <- acf(white_noise_ts)
+```
+
+
+## Autorregresión {.tabset}
+
+### Coeficientes
+
+```{r echo=FALSE}
+white_noise_ar <- ar(white_noise_ts, method = "mle", order.max = 1)
+white_noise_ar
+```
+
+### Gráfica
+
+```{r echo=FALSE}
+ts.plot(white_noise_ts, white_noise_ts-white_noise_ar$resid, lty=1:2, col=c("blue", "red"))
+```
+
+
+### Residuos
+
+```{r echo=FALSE}
+ts_plot(white_noise_ar$resid)
+```
+
+
+
+
+
+
+
+
+
+
