@@ -1,0 +1,89 @@
+---
+title: "Tarea 5. Regresión Lineal y Series Temporales."
+author: "Análisis Numérico."
+date: "Abril del 2024"
+output: 
+  html_document:
+    toc: false
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(pracma)
+library(plotly)
+library(polynom)
+library(RColorBrewer)
+library(plotly)
+library(MASS)
+library(car)
+library(corrplot)
+library(rgl)
+library(readxl)
+library(lubridate)
+library(xts)
+library(TSstudio)
+knitr::knit_hooks$set(webgl = hook_webgl)
+
+```
+
+
+
+En esta tarea se hará un análisis de algunos indicadores económicos proporcionados por el INEGI.  Inicialmente se carga el conjunto de datos.
+
+
+```{r}
+datos <- read_xlsx("Indicadores.xlsx")
+datos$Periodo <- ym(datos$Periodo)
+#datos <- datos[ , 1:7]
+glimpse(datos)
+```
+
+
+1. Selecciona 6 indicadores económicos y para cada uno realiza lo siguiente:
+
+a) Grafica el histograma.
+
+b) Resumen estadístico.
+
+c) Grafica la serie temporal.
+
+d) Lleva a cabo la descomposición de la serie temporal.
+
+e) Grafica la función de autocorrelación.
+
+f) Realiza la autorregresión lineal, compara los valores estimados con los reales y haz una gráfica de los residuos.
+
+g) Selecciona un par de años consecutivos y realiza la interpolación con splines cúbicos.
+
+h) Redacta tus conclusiones.
+
+
+2. Grafica los diagramas de dispersión (por medio de una matriz) de los indicadores seleccionados.
+
+3. Grafica la matriz de correlación.
+
+4. Lleva a cabo tres análisis de regresión lineal simple.
+
+5. Realiza un análisis de regresión no lineal.
+
+6. Lleva a cabo dos análisis de regresión lineal múltiple (dos variables independientes o predictores).
+
+
+
+
+
+
