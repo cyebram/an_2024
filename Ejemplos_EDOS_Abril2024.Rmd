@@ -38,6 +38,9 @@ Consideremos la siguiente función
  $f(x)=x\, sen\,x+x^2cos\,x$, $x\in [0,\pi]$
 
 
+La derivada
+$f'(x)=3xcos(x)+sin(x)-x^2sin(x)$
+
 
 
 # Ejemplo 2
@@ -47,6 +50,68 @@ Consideramos el problema de valor inicial
 \begin{equation}
 \frac{dy}{dt}=y-t^2+1, \qquad 0\leq t \leq 2, \qquad y(0)=0.5
 \end{equation}
+
+
+```{r}
+dy <- function(t,y){
+  y-t^2+1
+}
+y_sol <- function(t){
+  -exp(t)/2+(t+1)^2
+}
+
+my_euler <- function(dy, a,b, N, y0){
+  h <- (b-a)/N
+  T <- a
+  W <- y0
+  for (k in 1:N) {
+    w_new <- W[k]+ h*dy(T[k], W[k])
+    T <- c(T, T[k]+h)
+    W <- c(W, w_new)
+  }
+  resultados <- list("T"=T, "W"=W)
+  return(resultados)
+}
+
+# h <- 0.5 
+# T <- 0
+# W <- 0.5
+# t1 <- 0+h
+# w1 <- 0.5+h*dy(0, 0.5)
+# T <- c(T, t1)
+# W <- c(W,w1)
+# 
+# t2 <- t1+h
+# w2 <- w1+h*dy(t1, w1)
+# T <- c(T, t2)
+# W <- c(W,w2)
+# 
+# t3 <- t2+h
+# w3 <- w2+h*dy(t2, w2)
+# T <- c(T, t3)
+# W <- c(W,w3)
+# 
+# 
+# t4 <- t3+h
+# w4 <- w3+h*dy(t3, w3)
+# T <- c(T, t4)
+# W <- c(W,w4)
+
+sol_aprox <- my_euler(dy, 0, 2, 100, 0.5)
+
+
+my_colors=c("y(x)"="firebrick", "w(x)"="dodgerblue")
+
+ggplot()+
+  geom_function(aes(color="y(x)"),fun=y_sol, xlim=c(0,2))+
+  geom_line(aes(sol_aprox$T,sol_aprox$W, color="w(x)"))+
+  #geom_point(aes(sol_aprox$T,sol_aprox$W), color="green", size=3)+
+  scale_color_manual(values=my_colors)+
+  labs(x="t", y="y(t)", color=" ")+
+  theme_bw()
+
+```
+
 
 
 
