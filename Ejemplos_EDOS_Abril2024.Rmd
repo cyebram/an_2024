@@ -1,0 +1,57 @@
+---
+title: "Ejemplos Ecuaciones Diferenciales Ordinarias"
+author: "Análisis Numérico"
+date: "Abril 2024"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 1
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(pracma)
+library(plotly)
+library(polynom)
+```
+
+
+
+# Ejemplo 1
+
+Consideremos la siguiente función
+
+ $f(x)=x\, sen\,x+x^2cos\,x$, $x\in [0,\pi]$
+
+
+
+
+# Ejemplo 2
+
+Consideramos el problema de valor inicial
+
+\begin{equation}
+\frac{dy}{dt}=y-t^2+1, \qquad 0\leq t \leq 2, \qquad y(0)=0.5
+\end{equation}
+
+
+
+
+
+
+
+
