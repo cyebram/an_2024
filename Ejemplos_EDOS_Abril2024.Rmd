@@ -112,10 +112,87 @@ ggplot()+
 
 ```
 
+## Gráficas del error y de la cota
+
+
+```{r}
+error_real <- y_sol(sol_aprox$T)-sol_aprox$W
+
+
+M <- abs(-exp(2)/2+2)
+L <- 1
+h <- 0.02
+cota <- h*M/(2*L)*(exp(L*(sol_aprox$T))-1)
+
+
+
+graf_error <- ggplot()+
+  geom_line(aes(sol_aprox$T, error_real), color="gold")+
+  geom_point(aes(sol_aprox$T, error_real), color="red2")+
+  geom_line(aes(sol_aprox$T, cota), color="blue")+
+  theme_bw()
+
+ggplotly(graf_error)
+```
 
 
 
 
+# Ejemplo 3
+
+
+Considerermos el PVI:
+
+\begin{equation}
+\frac{dy}{dy}=te^{3t}-2y, \qquad 0\leq t \leq 2, \qquad y(0)=0 
+\end{equation}
+
+
+```{r}
+y_sol <- function(t){
+  1/25*exp(-2*t)+1/5*t*exp(3*t)-1/25*exp(3*t)
+}
+f <- function(t,y){
+  t*exp(3*t)-2*y
+}
+
+
+sol_aprox <- euler_heun(f, 0, 2, 0,n=10, improved = FALSE)
+
+my_colors=c("y(x)"="firebrick", "w(x)"="dodgerblue")
+
+ggplot()+
+  geom_function(aes(color="y(x)"),fun=y_sol, xlim=c(0,2))+
+  geom_line(aes(sol_aprox$t,sol_aprox$y, color="w(x)"))+
+  #geom_point(aes(sol_aprox$T,sol_aprox$W), color="green", size=3)+
+  scale_color_manual(values=my_colors)+
+  labs(x="t", y="y(t)", color=" ")+
+  theme_bw()
+
+```
+
+## Gráficas del error y de la cota
+
+
+```{r}
+error_real <- y_sol(sol_aprox$t)-sol_aprox$y
+
+
+M <- 3*exp(6)
+L <- 2
+h <- 0.2
+cota <- h*M/(2*L)*(exp(L*(sol_aprox$t))-1)
+
+
+
+graf_error <- ggplot()+
+  geom_line(aes(sol_aprox$t, error_real), color="gold")+
+  geom_point(aes(sol_aprox$t, error_real), color="red")+
+  geom_line(aes(sol_aprox$t, cota), color="blue")+
+  theme_bw()
+
+ggplotly(graf_error)
+```
 
 
 
