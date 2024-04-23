@@ -112,6 +112,54 @@ ggplot()+
 
 ```
 
+```{r}
+f <- function(t,y){
+  y-t^2+1
+}
+df <- function(t,y){
+  -2*t+f(t,y)
+}
+
+ddf <- function(t,y){
+  4*t+f(t,y)
+}
+
+
+my_taylor2 <- function(f, df, ddf , a,b, N, y0){
+  h <- (b-a)/N
+  T <- a
+  W <- y0
+  for (k in 1:N) {
+    w_new <- W[k]+ h*f(T[k], W[k])+h^2/2*df(T[k], W[k])+h^3/6*ddf(T[k], W[k])
+    T <- c(T, T[k]+h)
+    W <- c(W, w_new)
+  }
+  resultados <- list("T"=T, "W"=W)
+  return(resultados)
+}
+
+
+
+sol_aprox_2 <- my_taylor2(f, df, ddf, 0, 2, 100, 0.5)
+
+
+my_colors=c("y(x)"="firebrick", "w(x)"="dodgerblue", "w_2(x)"="deeppink3")
+
+sol_graf <- ggplot()+
+  geom_function(aes(color="y(x)"),fun=y_sol, xlim=c(0,2))+
+  geom_line(aes(sol_aprox$T,sol_aprox$W, color="w(x)"))+
+  geom_line(aes(sol_aprox_2$T,sol_aprox_2$W, color="w_2(x)"))+
+  #geom_point(aes(sol_aprox$T,sol_aprox$W), color="green", size=3)+
+  scale_color_manual(values=my_colors)+
+  labs(x="t", y="y(t)", color=" ")+
+  theme_bw()
+
+
+ggplotly(sol_graf)
+```
+
+
+
 ## Gráficas del error y de la cota
 
 
@@ -193,6 +241,93 @@ graf_error <- ggplot()+
 
 ggplotly(graf_error)
 ```
+
+
+
+Ejercicio 3
+
+Suppose that we use the Improved Euler's method to approximate the solution to the differential equation
+
+
+
+$ \frac{dy}{dx}=x−0.5y;\quad y(0.2)=4$
+
+
+Let $f(x,y)=x−0.5y.$ We let $x_0=0.2$ and $y_0=4$ and pick a step size h=0.25.
+ The improved Euler method is the the following algorithm. From $(x_n,y_n)$,
+ our approximation to the solution of the differential equation at the n
+-th stage, we find the next stage by computing the x
+-step $xn+1=xn+h$,
+ and then $k1$,
+ the slope at $(xn,yn)$.
+ The predicted new value of the solution is zn+1=yn+h⋅k1.
+ Then we find the slope at the predicted new point k2=f(xn+1,zn+1)
+ and get the corrected point by averaging slopes
+yn+1=yn+h2(k1+k2).
+Complete the following table:
+
+
+```{r}
+f <- function(x,y){
+  x-0.5*y
+}
+y_sol <- function(x){
+  7.6*exp(0.1)*exp(-x/2)+2*x-4
+}
+  
+  
+
+euler_modificado <- function(f, a, b, N, y0){
+  h <- (b-a)/N
+  X <- seq(a, b, by=h)
+  Y <- y0
+  K1 <- numeric()
+  K2 <- numeric()
+  Z <- numeric()
+  for (k in 1:N) {
+    K1[k] <- f(X[k],Y[k])
+    Z[k]=Y[k]+h*K1[k]
+    K2[k]=f(X[k+1], Z[k])
+     Y[k+1] <- Y[k]+h/2*(K1[k]+ K2[k]) 
+    # Y[k+1] <- Y[k]+h/2*(f(X[k],Y[k])+ f(X[k+1], Y[k]+h*f(X[k],Y[k]))) 
+  }
+  
+  resultados <- list("X"=X, "Y"=Y, "K1"=K1, "Z"=Z,  "K2"=K2)
+  return(resultados)
+  
+}
+
+sol_aprox <- euler_modificado(f, 0.2, 1.2, 4,4)
+
+
+graf_ej3 <- ggplot()+
+  geom_function(fun=y_sol, xlim=c(0.2, 1.2), color="red4", linewidth=1.2)+
+  geom_line(aes(sol_aprox$X, sol_aprox$Y), color="dodgerblue", linewith=1)+
+  theme_test()
+
+ggplotly(graf_ej3)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
