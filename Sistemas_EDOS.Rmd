@@ -36,11 +36,41 @@ Aproxima la solución de los siguientes problemas con valores iniciales con los 
 
 
 
-1. $y'=cos(2t)+sen(3t)$, $0\leq t\leq 1$, $y(0)=1$.  Solución exacta 
+1. $y'=cos(2t)+sen(3t)$, $0\leq t\leq 10$, $y(0)=1$.  Solución exacta 
 \begin{equation}
 y(t)=\frac{1}{2}sen(2t)-\frac{1}{3}cos(3t)+\frac{4}{3}.
  \end{equation}
  
+```{r}
+f <- function(t,y){
+  cos(2*t)+sin(3*t)
+}
+
+sol_y <- function(t) {
+  0.5*sin(2*t)-1/3*cos(3*t)+4/3
+}
+
+
+
+aprox_euler <- euler_heun(f, 0, 10, 1, n=100, improved = TRUE)
+aprox_rk4 <- rk4(f, 0, 10, 1, n=100)
+aprox_rk54 <- rkf54(f, 0, 10, 1)
+
+my_colors <- c("y(x)"="firebrick", "y_euler"="goldenrod", "y_rk4"="olivedrab", "y_rk54"="dodgerblue")
+
+
+
+sols_1 <- ggplot()+
+  geom_line(aes(aprox_euler$t, aprox_euler$y, color="y_euler"))+
+  geom_line(aes(aprox_rk4$x, aprox_rk4$y, color="y_rk4"))+
+  geom_line(aes(aprox_rk54$x, aprox_rk54$y, color="y_rk54"))+
+  geom_function(aes(color="y(x)"), fun=sol_y)+
+  labs(x="x", y="y", color="Aproximaciones")+
+  theme_bw()
+
+ggplotly(sols_1)
+
+```
  
  
  2. 
@@ -67,7 +97,36 @@ y(t)=\frac{1}{2}sen(2t)-\frac{1}{3}cos(3t)+\frac{4}{3}.
  y(t)=\frac{1}{\sqrt{3+2t^2+6e^{t^2}}}
  \end{equation}
  
- 
+```{r}
+f <- function(t,y){
+  (t+2*t^3)*y^3-t*y
+}
+
+sol_y <- function(t) {
+  1/sqrt(3+2*t^2+6*exp(t^2))
+}
+
+
+
+aprox_euler <- euler_heun(f, 0, 10, 1/3, n=100, improved = TRUE)
+aprox_rk4 <- rk4(f, 0, 10, 1/3, n=100)
+aprox_rk54 <- rkf54(f, 0, 10, 1/3)
+
+my_colors <- c("y(x)"="firebrick", "y_euler"="goldenrod", "y_rk4"="olivedrab", "y_rk54"="dodgerblue")
+
+
+
+sols_2 <- ggplot()+
+  geom_line(aes(aprox_euler$t, aprox_euler$y, color="y_euler"))+
+  geom_line(aes(aprox_rk4$x, aprox_rk4$y, color="y_rk4"))+
+  geom_line(aes(aprox_rk54$x, aprox_rk54$y, color="y_rk54"))+
+  geom_function(aes(color="y(x)"), fun=sol_y)+
+  labs(x="x", y="y", color="Aproximaciones")+
+  theme_bw()
+
+ggplotly(sols_2)
+
+```
  
  
 4. 
@@ -91,6 +150,39 @@ y_3(t)&=-sen\,t+cos\,t
 \end{aligned}
 \end{equation}
 
+
+```{r}
+f <- function(t,y){
+  as.matrix(c(y[2],-y[1]-2*exp(t)+1, -y[1]-exp(t)+1))
+}
+
+y1 <- function(t){cos(t)+sin(t)-exp(t)+1}
+y2 <- function(t){-sin(t)+cos(t)-exp(t)}
+y3 <- function(t){-sin(t)+cos(t)}
+
+
+y0 <- as.matrix(c(1,0,1))
+aprox_sis <- ode45(f, 0, 2,y0)
+
+my_colors <- c("y1"="firebrick", "y2"="deeppink", "y3"="gold",
+               "y1_a"="cyan", "y2_a"="dodgerblue3", "y3_a"="blue3")
+
+
+
+
+graf_sis <- ggplot()+
+  geom_function(aes(color="y1"), fun=y1)+
+  geom_function(aes(color="y2"), fun=y2)+
+  geom_function(aes(color="y3"), fun=y3)+
+  geom_line(aes(aprox_sis$t, aprox_sis$y[ , 1], color="y1_a"))+
+  geom_line(aes(aprox_sis$t, aprox_sis$y[ , 2], color="y2_a"))+
+  geom_line(aes(aprox_sis$t, aprox_sis$y[ , 3], color="y3_a"))+
+  theme_bw()
+ggplotly(graf_sis)
+```
+
+
+
 5. 
 
 \begin{equation}
@@ -109,6 +201,37 @@ y_1(t)&=\frac{1}{3}e^{5t}-\frac{1}{3}e^{-t}+e^{2t}\\
 y_2(t)&=\frac{1}{3}e^{5t}+\frac{2}{3}e^{-t}+t^2e^{2t}
 \end{aligned}
 \end{equation}
+
+
+```{r}
+f <- function(t,y){
+as.matrix(c(3*y[1]+2*y[2]-(2*t^2+1)*exp(2*t), 
+  4*y[1]+y[2]+(t^2+2*t-4)*exp(2*t)))
+}
+
+y0 <- as.matrix(c(1, 1))
+
+y1 <- function(t){(1/3)*exp(5*t)-(1/3)*exp(-t)+exp(2*t)}
+y2 <- function(t){(1/3)*exp(5*t)+(2/3)*exp(-t)+t^2*exp(2*t)}
+
+sol_sis <- ode45(f, 0, 1, y0)
+
+my_colors <- c("y1"="firebrick", "y2"="deeppink", "y1_a"="cyan", "y2_a"="dodgerblue3")
+
+
+graf_sol <- ggplot()+
+  geom_function(aes(color="y1"), fun=y1, xlim=(c(0,1)))+
+  geom_function(aes(color="y2"), fun=y2, xlim=(c(0,1)))+
+  geom_line(aes(sol_sis$t, sol_sis$y[ ,1], color="y1_a"))+
+  geom_line(aes(sol_sis$t, sol_sis$y[ ,2], color="y2_a"))+
+  scale_color_manual(values=my_colors)+
+  theme_bw()
+
+ggplotly(graf_sol)
+
+
+```
+
 
 
 6. 
@@ -151,5 +274,48 @@ Solución exacta:
 \begin{equation}
 y(t)=\frac{43}{36}e^t+\frac{1}{4}e^{-t}-\frac{4}{9}e^{-2t}+\frac{1}{6}te^t.
 \end{equation}
+
+
+```{r}
+f <- function(t, u){
+  as.matrix(c(u[2], u[3], exp(t)-2*+u[3]+u[2]+2*u[1]))
+}
+
+u0 <- as.matrix(c(1, 2, 0))
+
+
+y <- function(t){
+  43/36 *exp(t)+1/4 * exp(-t) -4/9*exp(-2*t)+(1/6)*t*exp(t)
+}
+
+sol_sis <- ode45(f, 0, 3, u0)
+
+graf_sol8 <- ggplot()+
+  geom_function(aes(color="y"), fun=y, xlim=c(0,3))+
+  geom_line(aes(sol_sis$t, sol_sis$y[,1], color="y_a"))+
+  scale_color_manual(values=c("y"="#988ABC", "y_a"="#ADE111"))+
+  labs(x="t", y="y", color="Funciones",
+       title="Ejercicio 8")+
+  theme_bw()
+
+ggplotly(graf_sol8)
+
+
+```
+
+
+
+
+```{r}
+tabla_sol <- tibble(t=sol_sis$t, y_a=sol_sis$y[,1], y_real=y(t), error_real=y_real- y_a, error_abs= abs(error_real))
+
+ggplot(tabla_sol)+
+  geom_line(aes(t, error_abs), color="firebrick3")
+
+
+
+```
+
+
 
 
