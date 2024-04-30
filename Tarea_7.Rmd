@@ -1,0 +1,65 @@
+---
+title: "Tarea 7. EDOs: Sistemas y orden superior"
+author: "Análisis Numérico."
+date: "Mayo del 2024"
+output: 
+  html_document:
+    toc: false
+    theme: cerulean
+---
+
+
+
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyverse)
+library(pracma)
+library(plotly)
+library(lubridate)
+library(polynom)
+library(RColorBrewer)
+library(plotly)
+library(MASS)
+library(car)
+library(rgl)
+
+knitr::knit_hooks$set(webgl = hook_webgl)
+
+```
+
+
+# Preliminar
+
+A continuación se aproxima la solución de las ecuaciones de Lorenz.  Escribe el sistema correspondiente y realiza una breve descripción.
+
+
+```{r}
+f <- function(t, u){
+  p <- par_prob
+  as.matrix(c(p[1]*(u[2]-u[1]), 
+              u[1]*(p[2]-u[3])-u[2], 
+              u[1]*u[2]-p[3]*u[3]))
+}
+
+u0 <- as.matrix(c(1, 0, 0))
+par_prob <- c(10.0,28.0,8/3)
+
+aprox_sist <- ode45(f, 0, 100,u0)
+
+aprox_sist_tab <- as.data.frame(aprox_sist$y)
+
+plot_ly(aprox_sist_tab, x = ~V1, y = ~V2, z = ~V3, type = 'scatter3d', mode = 'lines')
+
+```
+
+
